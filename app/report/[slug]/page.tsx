@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 export default async function ReportPage({ params }: any) {
-  const { slug } = params;
+  const { slug } = await params;
 
   let data = null;
   try {
@@ -9,6 +9,8 @@ export default async function ReportPage({ params }: any) {
     const res = await fetch(blobUrl, { cache: 'no-store' });
     if (res.ok) {
       data = await res.json();
+    } else {
+      console.error('Blob fetch failed:', res.status, blobUrl);
     }
   } catch (e) {
     console.error('Blob fetch error:', e);
