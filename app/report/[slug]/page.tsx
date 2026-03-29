@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { list } from '@vercel/blob';
 
 export default async function ReportPage({ params }: any) {
   const { slug } = params;
@@ -15,6 +14,7 @@ export default async function ReportPage({ params }: any) {
     console.error('Blob fetch error:', e);
     data = null;
   }
+
   if (!data) return notFound();
 
   const ragColor = (rag: string) => ({ green: '#2d6a4f', yellow: '#b07d10', red: '#9b2c2c' }[rag] || '#000');
