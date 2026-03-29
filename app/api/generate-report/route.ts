@@ -1,7 +1,5 @@
 import { NextRequest } from 'next/server';
 
-const reportStore = new Map<string, any>();
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -22,16 +20,16 @@ export async function POST(request: NextRequest) {
       .trim();
 
     const uniqueSlug = `${slug}-${Date.now()}`;
-
-    reportStore.set(uniqueSlug, {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fulcrum-reports.vercel.app';
+    
+    // Encode all data in URL so no storage needed
+    const encodedData = Buffer.from(JSON.stringify({
       ...data,
       company_name,
-      role_title,
-      generatedAt: new Date().toISOString()
-    });
+      role_title
+    })).toString('base64');
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fulcrum-reports.vercel.app';
-    const reportUrl = `${baseUrl}/report/${uniqueSlug}`;
+    const reportUrl = `${baseUrl}/report/${uniqueSlug}?d=${encodedData}`;
 
     return Response.json({
       success: true,
@@ -45,12 +43,4 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-}
-
-export async function GET(request: NextRequest) {
-  const slug = request.nextUrl.searchParams.get('slug');
-  if (!slug) return Response.json({ error: 'No slug' }, { status: 400 });
-  const data = reportStore.get(slug);
-  if (!data) return Response.json({ error: 'Not found' }, { status: 404 });
-  return Response.json(data);
 }
