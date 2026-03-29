@@ -6,12 +6,20 @@ export default async function ReportPage({ params }: any) {
 
   let data = null;
   try {
-    const { blobs } = await list({ prefix: `reports/${slug}` });
+    const { blobs } = await list({
+      prefix: `reports/${slug}`,
+      token: process.env.BLOB_READ_WRITE_TOKEN
+    });
     if (blobs.length > 0) {
-      const res = await fetch(blobs[0].url);
-      data = await res.json();
+      const res = await fetch(blobs[0].url, { cache: 'no-store' });
+      if (res.ok) {
+        data = await res.json();
+      }
     }
-  } catch { data = null; }
+  } catch (e) {
+    console.error('Blob fetch error:', e);
+    data = null;
+  }
 
   if (!data) return notFound();
 
@@ -46,13 +54,11 @@ export default async function ReportPage({ params }: any) {
       `}</style>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
 
-      {/* HEADER */}
       <header style={{position:'sticky',top:0,zIndex:10,background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'20px 56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <span style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:400,color:'#170b01'}}>fulcrum</span>
         <span style={{fontSize:11,fontWeight:500,letterSpacing:'0.08em',textTransform:'uppercase',color:'#9b8878'}}>Job Ad Review</span>
       </header>
 
-      {/* INTRO BOX */}
       <div style={{background:'#e8f4fb',borderBottom:'1px solid #c2dff0',padding:'22px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto',display:'flex',gap:16,alignItems:'flex-start'}}>
           <div style={{width:38,height:38,borderRadius:'50%',background:'#ed732e',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -64,7 +70,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* HERO */}
       <div style={{background:'#f8f2e9',padding:'60px 56px 52px',borderBottom:'3px solid #ed732e'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
@@ -88,7 +93,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* SCORE BAR */}
       <div style={{background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'16px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto',display:'flex',flexWrap:'wrap',gap:20,alignItems:'center'}}>
           <span style={{fontSize:11,fontWeight:500,letterSpacing:'0.1em',textTransform:'uppercase',color:'#9b8878',marginRight:8}}>OVERALL</span>
@@ -102,7 +106,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* WHAT YOU GOT RIGHT */}
       {data.got_right?.length > 0 && (
         <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
           <div className="wrap">
@@ -121,7 +124,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       )}
 
-      {/* SCORECARD */}
       <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Assessment</p>
@@ -153,7 +155,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* TOP RECOMMENDATIONS */}
       <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Priority Fixes</p>
@@ -181,7 +182,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* QUICK WINS */}
       {data.quick_wins?.length > 0 && (
         <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
           <div className="wrap">
@@ -200,7 +200,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       )}
 
-      {/* FULCRUM RECOMMENDS */}
       <div style={{background:'#f8f2e9',padding:'52px 0'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Fulcrum Recommends</p>
@@ -231,7 +230,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* FULL REWRITE */}
       <div style={{background:'#f8f2e9',borderTop:'3px solid #ed732e',padding:'52px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Full Rewrite</p>
@@ -245,7 +243,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* LANGUAGE NOTE */}
       {data.language_note && (
         <div style={{padding:'40px 56px'}}>
           <div style={{maxWidth:860,margin:'0 auto'}}>
@@ -260,7 +257,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       )}
 
-      {/* CTA */}
       <div style={{background:'#e8f4fb',borderTop:'1px solid #e8e0d4',padding:'52px 56px',textAlign:'center'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <h2 style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:400,marginBottom:16,color:'#170b01'}}>We help ambitious Australian companies hire better.</h2>
@@ -269,7 +265,6 @@ export default async function ReportPage({ params }: any) {
         </div>
       </div>
 
-      {/* FOOTER */}
       <div style={{background:'#170b01',padding:'28px 56px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
         <span style={{fontFamily:'var(--serif)',fontSize:18,fontWeight:400,color:'#fff'}}>fulcrum</span>
         <span style={{fontSize:11,color:'rgba(248,242,233,0.4)'}}>Prepared by Fulcrum. wearefulcrum.com</span>
