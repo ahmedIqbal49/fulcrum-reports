@@ -6,21 +6,15 @@ export default async function ReportPage({ params }: any) {
 
   let data = null;
   try {
-    const { blobs } = await list({
-      prefix: `reports/${slug}`,
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    if (blobs.length > 0) {
-      const res = await fetch(blobs[0].url, { cache: 'no-store' });
-      if (res.ok) {
-        data = await res.json();
-      }
+    const blobUrl = `https://58qv8plpbuqjr67w.public.blob.vercel-storage.com/reports/${slug}.json`;
+    const res = await fetch(blobUrl, { cache: 'no-store' });
+    if (res.ok) {
+      data = await res.json();
     }
   } catch (e) {
     console.error('Blob fetch error:', e);
     data = null;
   }
-
   if (!data) return notFound();
 
   const ragColor = (rag: string) => ({ green: '#2d6a4f', yellow: '#b07d10', red: '#9b2c2c' }[rag] || '#000');
