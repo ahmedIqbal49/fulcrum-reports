@@ -1,17 +1,36 @@
-import { notFound } from 'next/navigation';
+'use client';
 
-export default async function ReportPage({ params, searchParams }: any) {
-  let data = null;
+import { useEffect, useState } from 'react';
 
-  try {
-    const encoded = searchParams?.d;
-    if (encoded) {
-      const decoded = Buffer.from(encoded, 'base64').toString('utf-8');
-      data = JSON.parse(decoded);
+export default function ReportPage() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    try {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        const decoded = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
+        const parsed = JSON.parse(decoded);
+        setData(parsed);
+      }
+    } catch (e) {
+      console.error('Failed to parse report data', e);
     }
-  } catch { data = null; }
+    setLoading(false);
+  }, []);
 
-  if (!data) return notFound();
+  if (loading) return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontFamily:'system-ui'}}>
+      <p style={{color:'#5a4030'}}>Loading report...</p>
+    </div>
+  );
+
+  if (!data) return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontFamily:'system-ui'}}>
+      <p style={{color:'#9b2c2c'}}>Report not found.</p>
+    </div>
+  );
 
   const ragColor = (rag: string) => ({ green: '#2d6a4f', yellow: '#b07d10', red: '#9b2c2c' }[rag] || '#000');
   const ragBg = (rag: string) => ({ green: '#edf5f0', yellow: '#fdf7e8', red: '#fdf0f0' }[rag] || '#fff');
@@ -22,43 +41,35 @@ export default async function ReportPage({ params, searchParams }: any) {
 
   return (
     <>
-      <head>
-        <meta charSet="UTF-8" />
-        <title>{`Job Ad Review — ${data.company_name} | Fulcrum`}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
-        <style>{`
-          :root {
-            --orange:#ed732e;--orange-lt:#fdf0e6;--orange-md:#f6ca9e;
-            --cream:#f8f2e9;--white:#ffffff;--dark:#170b01;--mid:#5a4030;
-            --light:#9b8878;--border:#e8e0d4;--border-lt:#f0ece6;
-            --green:#2d6a4f;--green-lt:#edf5f0;--amber:#b07d10;
-            --amber-lt:#fdf7e8;--red:#9b2c2c;--red-lt:#fdf0f0;
-            --serif:'Playfair Display',Georgia,serif;
-            --sans:'DM Sans',system-ui,sans-serif;
-          }
-          *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-          body{font-family:var(--sans);background:var(--white);color:var(--dark);}
-          .wrap{max-width:860px;margin:0 auto;padding:0 56px;}
-          @media(max-width:700px){
-            .wrap{padding:0 24px;}
-            .grid-2{grid-template-columns:1fr!important;}
-            .grid-3{grid-template-columns:1fr!important;}
-            .rec-grid{grid-template-columns:1fr!important;}
-            .header-pad{padding:20px 24px!important;}
-            .hero-pad{padding:40px 24px!important;}
-            .score-pad{padding:16px 24px!important;}
-            .rewrite-pad{padding:32px 24px!important;}
-            .cta-pad{padding:40px 24px!important;}
-            .foot-pad{padding:20px 24px!important;}
-          }
-        `}</style>
-      </head>
+      <style>{`
+        :root {
+          --orange:#ed732e;--orange-lt:#fdf0e6;--orange-md:#f6ca9e;
+          --cream:#f8f2e9;--white:#ffffff;--dark:#170b01;--mid:#5a4030;
+          --light:#9b8878;--border:#e8e0d4;--border-lt:#f0ece6;
+          --green:#2d6a4f;--green-lt:#edf5f0;--amber:#b07d10;
+          --amber-lt:#fdf7e8;--red:#9b2c2c;--red-lt:#fdf0f0;
+          --serif:'Playfair Display',Georgia,serif;
+          --sans:'DM Sans',system-ui,sans-serif;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:var(--sans);background:var(--white);color:var(--dark);}
+        .wrap{max-width:860px;margin:0 auto;padding:0 56px;}
+        @media(max-width:700px){
+          .wrap{padding:0 24px;}
+          .grid-2{grid-template-columns:1fr!important;}
+          .grid-3{grid-template-columns:1fr!important;}
+          .rec-grid{grid-template-columns:1fr!important;}
+        }
+      `}</style>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
 
-      <header className="header-pad" style={{position:'sticky',top:0,zIndex:10,background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'20px 56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      {/* HEADER */}
+      <header style={{position:'sticky',top:0,zIndex:10,background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'20px 56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <span style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:400,color:'#170b01'}}>fulcrum</span>
         <span style={{fontSize:11,fontWeight:500,letterSpacing:'0.08em',textTransform:'uppercase',color:'#9b8878'}}>Job Ad Review</span>
       </header>
 
+      {/* INTRO BOX */}
       <div style={{background:'#e8f4fb',borderBottom:'1px solid #c2dff0',padding:'22px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto',display:'flex',gap:16,alignItems:'flex-start'}}>
           <div style={{width:38,height:38,borderRadius:'50%',background:'#ed732e',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -70,7 +81,8 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
-      <div className="hero-pad" style={{background:'#f8f2e9',padding:'60px 56px 52px',borderBottom:'3px solid #ed732e'}}>
+      {/* HERO */}
+      <div style={{background:'#f8f2e9',padding:'60px 56px 52px',borderBottom:'3px solid #ed732e'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
             <div style={{width:44,height:44,borderRadius:8,background:companyBg,color:'#fff',fontSize:16,fontWeight:600,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -93,7 +105,8 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
-      <div className="score-pad" style={{background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'16px 56px'}}>
+      {/* SCORE BAR */}
+      <div style={{background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'16px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto',display:'flex',flexWrap:'wrap',gap:20,alignItems:'center'}}>
           <span style={{fontSize:11,fontWeight:500,letterSpacing:'0.1em',textTransform:'uppercase',color:'#9b8878',marginRight:8}}>OVERALL</span>
           {[{l:'Green',k:'green',c:'#2d6a4f'},{l:'Yellow',k:'yellow',c:'#b07d10'},{l:'Red',k:'red',c:'#9b2c2c'}].map(({l,k,c})=>(
@@ -106,6 +119,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
+      {/* WHAT YOU GOT RIGHT */}
       {data.got_right?.length > 0 && (
         <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
           <div className="wrap">
@@ -124,6 +138,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       )}
 
+      {/* SCORECARD */}
       <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Assessment</p>
@@ -155,6 +170,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
+      {/* TOP RECOMMENDATIONS */}
       <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Priority Fixes</p>
@@ -182,6 +198,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
+      {/* QUICK WINS */}
       {data.quick_wins?.length > 0 && (
         <div style={{padding:'52px 0',borderBottom:'1px solid #e8e0d4'}}>
           <div className="wrap">
@@ -200,6 +217,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       )}
 
+      {/* FULCRUM RECOMMENDS */}
       <div style={{background:'#f8f2e9',padding:'52px 0'}}>
         <div className="wrap">
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Fulcrum Recommends</p>
@@ -209,7 +227,7 @@ export default async function ReportPage({ params, searchParams }: any) {
             {
               title:'The inclusive application note',
               body:'Research shows that strong candidates self-select out when they do not meet every criterion. Adding one sentence below your requirements list meaningfully improves the breadth of applications you receive without changing who you are looking for.',
-              quote:'Research shows that while men apply to jobs when they meet an average of 60% of the criteria, women and other folks in minority groups tend to only apply when they check every box. So if you think you have what it takes, but don\'t necessarily meet every single point above, please still get in touch. We\'d love to have a chat and see if you could be a great fit.',
+              quote:"Research shows that while men apply to jobs when they meet an average of 60% of the criteria, women and other folks in minority groups tend to only apply when they check every box. So if you think you have what it takes, but don't necessarily meet every single point above, please still get in touch. We'd love to have a chat and see if you could be a great fit.",
               footer:'We have included this in the rewrite below. Feel free to adapt the wording to suit your voice. The principle matters more than the exact phrasing.'
             },
             {
@@ -230,7 +248,8 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
-      <div className="rewrite-pad" style={{background:'#f8f2e9',borderTop:'3px solid #ed732e',padding:'52px 56px'}}>
+      {/* FULL REWRITE */}
+      <div style={{background:'#f8f2e9',borderTop:'3px solid #ed732e',padding:'52px 56px'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <p style={{fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:'#ed732e',marginBottom:8}}>Full Rewrite</p>
           <h2 style={{fontFamily:'var(--serif)',fontSize:28,fontWeight:400,marginBottom:24,color:'#170b01'}}>What the full rewrite could look like</h2>
@@ -243,6 +262,7 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
+      {/* LANGUAGE NOTE */}
       {data.language_note && (
         <div style={{padding:'40px 56px'}}>
           <div style={{maxWidth:860,margin:'0 auto'}}>
@@ -257,7 +277,8 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       )}
 
-      <div className="cta-pad" style={{background:'#e8f4fb',borderTop:'1px solid #e8e0d4',padding:'52px 56px',textAlign:'center'}}>
+      {/* CTA */}
+      <div style={{background:'#e8f4fb',borderTop:'1px solid #e8e0d4',padding:'52px 56px',textAlign:'center'}}>
         <div style={{maxWidth:860,margin:'0 auto'}}>
           <h2 style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:400,marginBottom:16,color:'#170b01'}}>We help ambitious Australian companies hire better.</h2>
           <p style={{fontSize:14,fontWeight:300,color:'#5a4030',maxWidth:540,margin:'0 auto 24px',lineHeight:1.7}}>Fulcrum is an embedded talent partner, not a recruitment agency. We work inside your team on a subscription model — handling everything from job ads to hiring strategy. If this review was useful, let us have a conversation about what else we can help you solve.</p>
@@ -265,7 +286,8 @@ export default async function ReportPage({ params, searchParams }: any) {
         </div>
       </div>
 
-      <div className="foot-pad" style={{background:'#170b01',padding:'28px 56px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+      {/* FOOTER */}
+      <div style={{background:'#170b01',padding:'28px 56px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
         <span style={{fontFamily:'var(--serif)',fontSize:18,fontWeight:400,color:'#fff'}}>fulcrum</span>
         <span style={{fontSize:11,color:'rgba(248,242,233,0.4)'}}>Prepared by Fulcrum. wearefulcrum.com</span>
       </div>

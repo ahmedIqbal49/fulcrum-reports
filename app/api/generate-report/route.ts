@@ -21,15 +21,10 @@ export async function POST(request: NextRequest) {
 
     const uniqueSlug = `${slug}-${Date.now()}`;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fulcrum-reports.vercel.app';
-    
-    // Encode all data in URL so no storage needed
-    const encodedData = Buffer.from(JSON.stringify({
-      ...data,
-      company_name,
-      role_title
-    })).toString('base64');
 
-    const reportUrl = `${baseUrl}/report/${uniqueSlug}?d=${encodedData}`;
+    const payload = JSON.stringify({ ...data, company_name, role_title });
+    const encodedData = Buffer.from(payload).toString('base64url');
+    const reportUrl = `${baseUrl}/report/${uniqueSlug}#${encodedData}`;
 
     return Response.json({
       success: true,
