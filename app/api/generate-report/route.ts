@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { put } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,11 +21,19 @@ export async function POST(request: NextRequest) {
       .trim();
 
     const uniqueSlug = `${slug}-${Date.now()}`;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fulcrum-reports.vercel.app';
 
-    const payload = JSON.stringify({ ...data, company_name, role_title });
-    const encodedData = Buffer.from(payload).toString('base64url');
-    const reportUrl = `${baseUrl}/report/${uniqueSlug}#${encodedData}`;
+    await put(`reports/${uniqueSlug}.json`, JSON.stringify({
+      ...data,
+      company_name,
+      role_title,
+      generatedAt: new Date().toISOString()
+    }), {
+      access: 'public',
+      contentType: 'application/json'
+    });
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fulcrum-reports.vercel.app';
+    const reportUrl = `${baseUrl}/report/${uniqueSlug}`;
 
     return Response.json({
       success: true,
