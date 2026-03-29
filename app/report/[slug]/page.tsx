@@ -51,7 +51,7 @@ export default async function ReportPage({ params }: any) {
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
 
       <header style={{position:'sticky',top:0,zIndex:10,background:'#fff',borderBottom:'1px solid #e8e0d4',padding:'20px 56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <span style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:400,color:'#170b01'}}>fulcrum</span>
+        <img src="/fulcrum-logo-black.png" alt="Fulcrum" style={{height:32,display:'block'}} />
         <span style={{fontSize:11,fontWeight:500,letterSpacing:'0.08em',textTransform:'uppercase',color:'#9b8878'}}>Job Ad Review</span>
       </header>
 
@@ -262,7 +262,7 @@ export default async function ReportPage({ params }: any) {
       </div>
 
       <div style={{background:'#170b01',padding:'28px 56px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
-        <span style={{fontFamily:'var(--serif)',fontSize:18,fontWeight:400,color:'#fff'}}>fulcrum</span>
+        <img src="/fulcrum-logo-white.png" alt="Fulcrum" style={{height:28,display:'block'}} />
         <span style={{fontSize:11,color:'rgba(248,242,233,0.4)'}}>Prepared by Fulcrum. wearefulcrum.com</span>
       </div>
     </>
