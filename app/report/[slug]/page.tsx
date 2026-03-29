@@ -1,36 +1,19 @@
-'use client';
+import { notFound } from 'next/navigation';
+import { list } from '@vercel/blob';
 
-import { useEffect, useState } from 'react';
+export default async function ReportPage({ params }: any) {
+  const { slug } = params;
 
-export default function ReportPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    try {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
-        const decoded = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
-        const parsed = JSON.parse(decoded);
-        setData(parsed);
-      }
-    } catch (e) {
-      console.error('Failed to parse report data', e);
+  let data = null;
+  try {
+    const { blobs } = await list({ prefix: `reports/${slug}` });
+    if (blobs.length > 0) {
+      const res = await fetch(blobs[0].url);
+      data = await res.json();
     }
-    setLoading(false);
-  }, []);
+  } catch { data = null; }
 
-  if (loading) return (
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontFamily:'system-ui'}}>
-      <p style={{color:'#5a4030'}}>Loading report...</p>
-    </div>
-  );
-
-  if (!data) return (
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontFamily:'system-ui'}}>
-      <p style={{color:'#9b2c2c'}}>Report not found.</p>
-    </div>
-  );
+  if (!data) return notFound();
 
   const ragColor = (rag: string) => ({ green: '#2d6a4f', yellow: '#b07d10', red: '#9b2c2c' }[rag] || '#000');
   const ragBg = (rag: string) => ({ green: '#edf5f0', yellow: '#fdf7e8', red: '#fdf0f0' }[rag] || '#fff');
