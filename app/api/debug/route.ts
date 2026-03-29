@@ -14,15 +14,3 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
-```
-
-Save and close → then push:
-```
-git add .
-git commit -m "add debug endpoint"
-git push
-```
-
-Wait 2 minutes → then open in browser:
-```
-https://fulcrum-reports.vercel.app/api/debug
